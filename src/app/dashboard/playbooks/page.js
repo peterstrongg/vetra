@@ -1,12 +1,40 @@
+"use client";
+
 import Link from "next/link";
 import Sidebar from "../sidebar";
+import { useState, useEffect } from "react";
+import { API_URL } from "@/lib/config";
 
 export default function Playbooks() {
-  const playbooks = [
-    { name: "deploy_web.yml", uploaded: "2025-07-24", lastRun: "2025-07-25", status: "success" },
-    { name: "restart_services.yml", uploaded: "2025-07-20", lastRun: "2025-07-25", status: "pending" },
-    { name: "update_nodes.yml", uploaded: "2025-07-18", lastRun: "2025-07-23", status: "failed" },
-  ];
+  const [playbooks, setPlaybooks] = useState([]);
+
+  useEffect(() => {
+    const getPlaybooks = async () => {
+      try {
+        const response = await fetch(`${API_URL}/playbooks`);
+        const data = await response.json();
+        let pbs = [];
+        for (const file of data.files) {
+          pbs.push({
+            name: file,
+            uploaded: new Date().toLocaleDateString(),
+            lastRun: new Date().toLocaleDateString(),
+            status: "pending",
+          });
+        }
+        setPlaybooks(pbs);
+      } catch (error) {
+        console.log("Error fetching playbooks:", error);
+      }
+    };
+    getPlaybooks();
+  }, []);
+
+  // const playbooks = [
+  //   { name: "deploy_web.yml", uploaded: "2025-07-24", lastRun: "2025-07-25", status: "success" },
+  //   { name: "restart_services.yml", uploaded: "2025-07-20", lastRun: "2025-07-25", status: "pending" },
+  //   { name: "update_nodes.yml", uploaded: "2025-07-18", lastRun: "2025-07-23", status: "failed" },
+  // ];
 
   return (
     <div className="flex min-h-screen bg-neutral-100 text-gray-900">
