@@ -8,39 +8,43 @@ import { API_URL } from "@/lib/config";
 export default function Playbooks() {
   const [playbooks, setPlaybooks] = useState([]);
 
-  useEffect(() => {
-    const getPlaybooks = async () => {
-      try {
-        const response = await fetch(`${API_URL}/playbooks`);
-        const data = await response.json();
-        let pbs = [];
-        for (const file of data.files) {
-          pbs.push({
-            name: file,
-            uploaded: new Date().toLocaleDateString(),
-            lastRun: new Date().toLocaleDateString(),
-            status: "pending",
-          });
-        }
-        setPlaybooks(pbs);
-      } catch (error) {
-        console.log("Error fetching playbooks:", error);
+  const getPlaybooks = async () => {
+    try {
+      const response = await fetch(`${API_URL}/playbooks`);
+      const data = await response.json();
+      let pbs = [];
+      for (const file of data.files) {
+        pbs.push({
+          name: file,
+          uploaded: new Date().toLocaleDateString(),
+          lastRun: new Date().toLocaleDateString(),
+          status: "pending",
+        });
       }
-    };
+      setPlaybooks(pbs);
+    } catch (error) {
+      console.log("Error fetching playbooks:", error);
+    }
+  };
+
+  useEffect(() => {
     getPlaybooks();
   }, []);
 
-  // const playbooks = [
-  //   { name: "deploy_web.yml", uploaded: "2025-07-24", lastRun: "2025-07-25", status: "success" },
-  //   { name: "restart_services.yml", uploaded: "2025-07-20", lastRun: "2025-07-25", status: "pending" },
-  //   { name: "update_nodes.yml", uploaded: "2025-07-18", lastRun: "2025-07-23", status: "failed" },
-  // ];
-
   return (
     <div className="flex min-h-screen bg-neutral-100 text-gray-900">
-      {/* 📊 Main Content */}
       <main className="ml-64 flex-1 py-10 px-6">
         <h1 className="text-3xl font-bold text-gray-700 mb-6 text-center">🧭 Vetra Dashboard</h1>
+
+        {/* 🔄 Button aligned with left of table container */}
+        <div className="max-w-4xl mx-auto mb-4">
+          <button
+            onClick={getPlaybooks}
+            className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+          >
+          Refresh Playbooks
+          </button>
+        </div>
 
         <div className="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto overflow-x-auto">
           <table className="w-full text-sm text-left">
