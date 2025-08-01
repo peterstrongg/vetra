@@ -10,14 +10,14 @@ export default function Playbooks() {
 
   const getPlaybooks = async () => {
     try {
-      const response = await fetch(`${API_URL}/playbooks`);
+      const response = await fetch(`${API_URL}/api/v1/playbooks`);
       const data = await response.json();
       let pbs = [];
-      for (const file of data.files) {
+      for (const playbook of data.playbooks) {
         pbs.push({
-          name: file,
-          uploaded: new Date().toLocaleDateString(),
-          lastRun: new Date().toLocaleDateString(),
+          name: playbook.Name,
+          uploaded: playbook.UploadedDate,
+          lastRun: playbook.LastRunDate || "-",
           status: "pending",
         });
       }
@@ -26,6 +26,25 @@ export default function Playbooks() {
       console.log("Error fetching playbooks:", error);
     }
   };
+
+  const refreshPlaybooks = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/v1/refresh-playbooks`);
+      const data = await response.json();
+      let pbs = [];
+      for (const playbook of data.playbooks) {
+        pbs.push({
+          name: playbook.Name,
+          uploaded: playbook.UploadedDate,
+          lastRun: playbook.LastRunDate || "-",
+          status: "pending",
+        });
+      }
+      setPlaybooks(pbs);
+    } catch (error) {
+      console.log("Error fetching playbooks:", error);
+    }
+  }
 
   useEffect(() => {
     getPlaybooks();
@@ -39,7 +58,7 @@ export default function Playbooks() {
         {/* 🔄 Button aligned with left of table container */}
         <div className="max-w-4xl mx-auto mb-4">
           <button
-            onClick={getPlaybooks}
+            onClick={refreshPlaybooks}
             className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
           >
           Refresh Playbooks
